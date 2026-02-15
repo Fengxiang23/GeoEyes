@@ -1,6 +1,6 @@
 # my_run.yaml
 defaults:
-  - ppo_trainer # 这里写 main_ppo.py 默认的 config_name（不带 .yaml）
+  - ppo_trainer
   - _self_
 reward_model:
   reward_manager: naive_api
@@ -30,7 +30,7 @@ algorithm:
 actor_rollout_ref:
   model:
     enable_gradient_checkpointing: true
-    path: /path/to/saves/Qwen2.5-VL-7B-Instruct/highrs_interleaved
+    path: /path/to/saves/Qwen2.5-VL-7B-Instruct/UHR-CoZ-SFT
     use_remove_padding: true
 
   actor:
@@ -81,9 +81,9 @@ trainer:
   nnodes: 4
   save_freq: 8
   test_freq: 10000
-  project_name: deepgeollava
-  experiment_name: 0126_debug_highrs_interleaved_promptv1_5_rerun_with_local_llm_check_l20_speed
-  default_local_dir: /path/to/verl_ckpts/deepgeollava/0126_debug_highrs_interleaved_promptv1_5_rerun_with_local_llm_check_l20_speed
+  project_name: geoeyes
+  experiment_name: geoeyes_uhr_coz
+  default_local_dir: /path/to/verl_ckpts/geoeyes/geoeyes_uhr_coz
   tensorboard_dir: /path/to/verl_ckpts/logs/tensorboard
   rl_logging_board_dir: /path/to/verl_ckpts/logs/rl_logging_board
   total_epochs: 32

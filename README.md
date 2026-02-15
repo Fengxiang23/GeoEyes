@@ -1,9 +1,38 @@
 <div align="center">
-  <h2><strong>Adaptive Zoom-in Agentic RLVR for Ultra-High-Resolution Remote Sensing VQA</strong></h2>
-  <h5>
-  Anonymous Authors
-      <br/><br/>
-  </h5>
+  <h2><strong>GeoEyes: On-Demand Visual Focusing for Evidence-Grounded Understanding of Ultra-High-Resolution Remote Sensing Imagery</strong></h2>
+  <p>
+    <strong>Fengxiang Wang</strong><sup>1</sup>, 
+    <strong>Mingshuo Chen</strong><sup>2</sup>, 
+    <strong>Yueying Li</strong><sup>1</sup>, 
+    <strong>Yajie Yang</strong><sup>3</sup>, 
+    <strong>Yifan Zhang</strong><sup>4*</sup>, 
+    <strong>Long Lan</strong><sup>1</sup>
+    <br>
+    <strong>Xue Yang</strong><sup>5</sup>, 
+    <strong>Hongda Sun</strong><sup>6*</sup>, 
+    <strong>Yulin Wang</strong><sup>7</sup>, 
+    <strong>Di Wang</strong><sup>8</sup>, 
+    <strong>Jing Zhang</strong><sup>8</sup>, 
+    <strong>Jun Song</strong><sup>*</sup>, 
+    <strong>Bo Du</strong><sup>8</sup>
+  </p>
+  <p>
+    <sup>1</sup>National University of Defense Technology, 
+    <sup>2</sup>Beijing University of Posts and Telecommunications
+    <br>
+    <sup>3</sup>University of the Chinese Academy of Sciences, 
+    <sup>4</sup>Chinese Academy of Science
+    <br>
+    <sup>5</sup>Shanghai Jiao Tong University, 
+    <sup>6</sup>Renmin University of China, 
+    <sup>7</sup>Tsinghua University, 
+    <sup>8</sup>Wuhan University
+    </p> 
+</div>
+<div align="center">
+  <a href="https://arxiv.org/abs/2601.00000"><img src="https://img.shields.io/badge/ArXiv-2601.00000-brown?logo=arxiv" alt="paper"></a> 
+    <a href="https://huggingface.co/datasets/initiacms/UHR-CoZ"><img src="https://img.shields.io/badge/🤗%20huggingface-Dataset-blue" alt="dataset"></a> 
+    <a href="https://huggingface.co/initiacms/GeoEyes"><img src="https://img.shields.io/badge/🤗%20huggingface-Model-purple" alt="checkpoint"></a>
 </div>
 
 ## 📚 Contents
@@ -13,6 +42,7 @@
 - [🌐UHR-CoZ Dataset](#uhr-coz-dataset)
 - [🛠️Methodology & Training](#methodology--training)
 - [🚀Evaluation](#evaluation)
+- [🤝Acknowledgement](#acknowledgement)
 
 ## 🔍Overview
 
@@ -38,14 +68,14 @@ We construct **UHR Chain-of-Zoom (UHR-CoZ)**, the first large-scale interleaved 
 
 ### Dataset Statistics
 
-| Statistic                          | Value         |
-| :--------------------------------- | :------------ |
-| **Total Samples**                  | **25,467**    |
-| Avg. Image Resolution              | 2,178 × 2,051 |
-| Zoom-in Depth (No Zoom)            | 6.4%          |
-| Zoom-in Depth (One Zoom)           | 86.7%         |
-| Zoom-in Depth (Multi-Step $\ge 3$) | 6.9%          |
-| Avg. Reasoning Length              | 157.8 tokens  |
+| Statistics                | Value         |
+| :------------------------ | :------------ |
+| **Total Samples**         | **25,467**    |
+| Avg. Image Resolution     | 2,178 × 2,051 |
+| Zoom-in Depth 1 (No Zoom) | 6.4%          |
+| Zoom-in Depth 2           | 86.7%         |
+| Zoom-in Depth $\ge 3$     | 6.9%          |
+| Avg. Reasoning Length     | 157.8 tokens  |
 
 ## 🛠️Methodology & Training
 
@@ -53,11 +83,9 @@ Our approach builds upon the **DeepEyes** framework, introducing a two-stage opt
 
 ### 1. Prepare Data
 
-* **UHR-CoZ**: Download our constructed SFT dataset with interleaved zoom trajectories.
-* **SuperRS-VQA**: Used during the RL stage to enhance task diversity.
-* **General RL Data**: We utilize DeepEyes-47K for general reasoning stability.
-
-**Anonymous Dataset URL**: https://huggingface.co/datasets/Anonymous-BdjkruUUIg/UHR-CoZ
+* **UHR-CoZ**: Download our constructed SFT dataset with interleaved zoom trajectories through [huggingface](https://huggingface.co/datasets/initiacms/UHR-CoZ).
+* **SuperRS-VQA**: Used during the RL stage to enhance task diversity which is included in UHR-CoZ.
+* **General RL Data**: We utilize [DeepEyes-47K](https://huggingface.co/datasets/ChenShawn/DeepEyes-Datasets-47k) for general reasoning stability.
 
 ### 2. Training Stages
 
@@ -67,10 +95,12 @@ The code base is develeped using torch2.6/2.8+cu128 and Python3.10/3.11.
 We perform Supervised Fine-Tuning on UHR-CoZ to initialize the policy with basic tool capabilities and stop-conditions.
 
 ```bash
-# 1. We use LLaMA-Factory for SFT please first install llamafactory, following
-# https://github.com/hiyouga/LlamaFactory/tree/2a822178dea4d1c05f595521dd883a8e4f4e2e77
-# 2. Ensure dataset_info.json is updated with UHR-CoZ paths
-# 3. start training
+# 1. Download and prepare sft data from huggingface
+# please make sure to modify the absolute image paths in UHR-CoZ.json
+# 2. SFT using llamafactory
+# We use this specific commit: https://github.com/hiyouga/LlamaFactory/tree/2a822178dea4d1c05f595521dd883a8e4f4e2e77
+# if encountered TypeError during dataset preprocess, refer to https://github.com/hiyouga/LlamaFactory/issues/5613
+# modify json paths in dataset_info.json and yaml file
 llamafactory-cli train config.yaml
 ```
 
@@ -83,11 +113,12 @@ We optimize the model using **Group Relative Policy Optimization (GRPO)** with o
 * **Necessity-Aware Process Verification** (LLM-based judge for logical rigor).
 
 ```bash
-# 1. Train using the DeepEyes-based RLVR framework, please first install DeepEyes, following https://github.com/Visual-Agent/DeepEyes
+# 1. first install DeepEyes following https://github.com/Visual-Agent/DeepEyes
 # we also provided a clean requirements.txt without torch package
 # 2. download RL data, and modify parquet file paths in the training script/yaml file
+# there are 3 parquets from DeepEyes-47k and 1 parquet file from UHR-CoZ HF repo
 # 3. follow deepeyes to set LLM judge and start training using
-export LLM_AS_A_JUDGE_BASE="http://{IP}:{PORT}/v1"
+# export LLM_AS_A_JUDGE_BASE="http://{IP}:{PORT}/v1"
 python -m verl.trainer.main_ppo \
     --config-path DeepEyes/config \
     --config-name deepeyes_coz
@@ -100,21 +131,22 @@ We evaluate on **XLRS-Bench**, focusing on Perception (e.g., Counting, Object Cl
 ### Running Evaluation
 
 ```bash
-# 1. frist prepare data using the provided notebook
-# 2. convert model from pt format to hf model
+# 0. execute the prepare_xlrs_data.ipynb to preprocess the evaluation data
+# 1. convert model from pt format to hf model
 bash s1.sh
-# 3. deploy model using vllm (or ray using `serve run ray.yaml`)
+# 2. deploy model using vllm (or ray using `serve run ray.yaml`)
 bash s21.sh
-# 4. prompting vllm, this may take 1~2 days considering different GPU types
+# 3. prompting vllm
 bash s22.sh
-# 5. calculate accuracy metrics
+# 4. calculate metrics
 bash s232.sh
-# 6. analyze tool call statistics
-bash s233.sh
 ```
-
-We provide our trained model checkpoints through **anonymous** repo: https://huggingface.co/Anonymous-BdjkruUUIg/GeoEyes
 
 ### Main Results (XLRS-Bench)
 
 <img src="assets/main_res.jpg" alt="pipeline" style="zoom: 80%;" />
+
+# 🤝Acknowledgement
+
+This repo benefits from [DeepEyes](https://github.com/Visual-Agent/DeepEyes) and [LLaMA-Factory](https://github.com/hiyouga/LlamaFactory). Thanks for their wonderful works.
+
