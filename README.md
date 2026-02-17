@@ -30,7 +30,7 @@
     </p> 
 </div>
 <div align="center">
-  <a href="https://arxiv.org/abs/2601.00000"><img src="https://img.shields.io/badge/ArXiv-2601.00000-brown?logo=arxiv" alt="paper"></a> 
+  <a href="https://arxiv.org/abs/2602.14201"><img src="https://img.shields.io/badge/ArXiv-2601.00000-brown?logo=arxiv" alt="paper"></a> 
     <a href="https://huggingface.co/datasets/initiacms/UHR-CoZ"><img src="https://img.shields.io/badge/🤗%20huggingface-Dataset-blue" alt="dataset"></a> 
     <a href="https://huggingface.co/initiacms/GeoEyes"><img src="https://img.shields.io/badge/🤗%20huggingface-Model-purple" alt="checkpoint"></a>
 </div>
@@ -149,4 +149,5 @@ bash s232.sh
 # 🤝Acknowledgement
 
 This repo benefits from [DeepEyes](https://github.com/Visual-Agent/DeepEyes) and [LLaMA-Factory](https://github.com/hiyouga/LlamaFactory). Thanks for their wonderful works.
+
 
